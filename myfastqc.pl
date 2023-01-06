@@ -1,7 +1,9 @@
 #!/usr/bin/perl
 # usage : myfastqc.pl -i data -o fastqc
 # to do : run fastqc and combine all plot in one html
-# tools : need to preinstall fastqc and convert
+# tools : need to preinstall fastqc and imagemagick
+# ver.  : v2.1
+
 
 use strict;
 use Cwd qw/cwd abs_path/;
@@ -28,8 +30,8 @@ usage() unless $input_dir;
 
 sub usage {
 	print <<EOF;
-usage: fastqc2-0.pl [option]
-e.g. : fastqc2-0.pl -i data -o fastqc -t 8
+usage: fastqc.pl [option]
+e.g. : fastqc.pl -i data -o fastqc -t 8
 
 -i, --input   INPUT DIR. The directory that holds the input fastq files.
               Automatically detect [fastq, fastq.gz, fq, fq.gz] files.
@@ -86,7 +88,10 @@ foreach my $i( 0..$#files) {
 	# add image
 	foreach my $j(2..10) {
 		# using convert to get img_src base64 encoding
-		my $img_base64 = `convert $img_src[$i]->[$j-2] -resize 200 INLINE:PNG:-`;
+		my $img_base64;
+		if (-e $img_src[$i]->[$j-2]) {
+			$img_base64 = `convert $img_src[$i]->[$j-2] -resize 200 INLINE:PNG:-`;
+		}
 		$table->setCellFormat($i+2, $j, "<img src=\"$img_base64\" alt=\"NA\" width=\"200\">");
 	}
 }
